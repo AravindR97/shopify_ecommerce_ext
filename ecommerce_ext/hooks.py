@@ -139,7 +139,8 @@ app_license = "mit"
 
 doc_events = {
     "Item": {
-        "after_save": "ecommerce_ext.sync.push_metafields_to_shopify"
+        "after_insert": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify",
+        "after_save": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify"
     }
 }
 
