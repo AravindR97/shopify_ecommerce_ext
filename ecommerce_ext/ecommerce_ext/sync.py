@@ -19,29 +19,66 @@ CUSTOM_FIELD_MAP = {
 }
 
 
-def push_metafields_to_shopify(doc, method=None):
-    """
-    Called after an ERPNext Item is saved.
-    Finds the linked Shopify product and pushes custom fields as metafields.
-    """
+# def push_metafields_to_shopify(doc, method=None):
+#     """
+#     Called after an ERPNext Item is saved.
+#     Finds the linked Shopify product and pushes custom fields as metafields.
+#     """
 
-    # Only proceed if this item is synced with Shopify
+#     # Only proceed if this item is synced with Shopify
+#     shopify_product_id = get_shopify_product_id(doc.name)
+#     if not shopify_product_id:
+#         return
+
+#     # Get Shopify connection settings
+#     settings = get_shopify_settings()
+#     if not settings:
+#         return
+
+#     # Build the metafields payload from the item's custom fields
+#     metafields = build_metafields_payload(doc)
+#     if not metafields:
+#         return
+
+#     # Push each metafield to Shopify
+#     push_metafields(settings, shopify_product_id, metafields)
+
+def push_metafields_to_shopify(doc, method=None):
     shopify_product_id = get_shopify_product_id(doc.name)
+    frappe.msgprint(f"Shopify Product ID: {shopify_product_id}")
     if not shopify_product_id:
         return
 
-    # Get Shopify connection settings
     settings = get_shopify_settings()
     if not settings:
         return
 
-    # Build the metafields payload from the item's custom fields
     metafields = build_metafields_payload(doc)
+    frappe.msgprint(f"Metafields Payload: {metafields}")
     if not metafields:
+        frappe.msgprint("No metafields to push — custom fields may be empty!")
         return
 
-    # Push each metafield to Shopify
     push_metafields(settings, shopify_product_id, metafields)
+
+
+def push_metafields(settings, shopify_product_id, metafields):
+    shop_url = settings.shopify_url.rstrip("/")
+    password = settings.password
+
+    base_url = f"https://{shop_url}/admin/api/2024-01/products/{shopify_product_id}/metafields.json"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": password,
+    }
+
+    for metafield in metafields:
+        payload = {"metafield": metafield}
+        try:
+            response = requests.post(base_url, json=payload, headers=headers)
+            frappe.msgprint(f"Pushed '{metafield['key']}' → Status: {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            frappe.msgprint(f"Exception: {str(e)}")
 
 
 def get_shopify_product_id(item_code):
