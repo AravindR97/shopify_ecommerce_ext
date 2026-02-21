@@ -137,13 +137,11 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+    "Item": {
+        "after_save": "ecommerce_ext.sync.push_metafields_to_shopify"
+    }
+}
 
 # Scheduled Tasks
 # ---------------
@@ -247,3 +245,12 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": {
+            "dt": "Item",
+            "fieldname": ["in", ["custom_barcode", "custom_color"]]
+        }
+    }
+]
