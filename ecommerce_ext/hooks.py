@@ -137,12 +137,12 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-    "Item": {
-        "after_insert": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify",
-        "after_save": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify"
-    }
-}
+# doc_events = {
+#     "Item": {
+#         "after_insert": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify",
+#         "after_save": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify"
+#     }
+# }
 
 # Scheduled Tasks
 # ---------------
