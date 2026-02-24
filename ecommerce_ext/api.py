@@ -58,6 +58,8 @@ def create_material_receipt(data=None):
         uom = data.get("uom")
         quantity = data.get("quantity")
         rate = data.get("rate")
+        aisle = data.get("aisle")
+        rack = data.get("rack")
 
         if not all([warehouse, item_code, uom, quantity, rate]):
             frappe.throw(_("All fields are required"))
@@ -79,8 +81,18 @@ def create_material_receipt(data=None):
             "basic_rate": flt(rate)
         })
 
-        # Insert as Draft
         stock_entry.insert()
+
+        item_storage = frappe.new_doc("Item Storage Location")
+        item_storage.item_code = item_code
+        item_storage.warehouse = warehouse
+        item_storage.uom = uom
+        item_storage.quantity = flt(quantity)
+        item_storage.aisle = aisle
+        item_storage.rack = rack
+        item_storage.save()
+
+        stock_entry.submit()
 
         return {
             "status": "success",
