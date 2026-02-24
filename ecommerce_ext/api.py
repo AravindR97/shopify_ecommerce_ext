@@ -31,13 +31,16 @@ def get_item_by_barcode(barcode):
         pluck="uom"
     )
 
+    warehouses = frappe.get_all( "Warehouse", filters={"is_group": 0}, pluck="name" )
+
     return {
         "item_code": item.name,
         "item_name": item.item_name,
         "item_group": item.item_group,
         "default_uom": item.stock_uom,
         "description": item.description,
-        "available_uoms": uoms
+        "available_uoms": uoms,
+        "warehouses": warehouses,
     }
 
 
