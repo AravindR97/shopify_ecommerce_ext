@@ -7,4 +7,6 @@ from frappe.model.document import Document
 
 class ItemStorageLocation(Document):
     def before_insert(self):
+        self.aisle = self.aisle.upper()
+        self.rack = self.rack.upper()
         self.location = self.warehouse + " - " + self.aisle + " - " + self.rack
