@@ -137,12 +137,12 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#     "Item": {
-#         "after_insert": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify",
-#         "after_save": "ecommerce_ext.ecommerce_ext.sync.push_metafields_to_shopify"
-#     }
-# }
+doc_events = {
+    "Item": {
+        "after_insert": "ecommerce_ext.shopify_override.upload_erpnext_item",
+        "on_update": "ecommerce_ext.shopify_override.upload_erpnext_item"
+    }
+}
 
 # Scheduled Tasks
 # ---------------
@@ -173,10 +173,10 @@ app_license = "mit"
 # Overriding Methods
 # ------------------------------
 #
-override_whitelisted_methods = {
-	"ecommerce_integrations.ecommerce_integrations.shopify.product.upload_erpnext_item":
-        "ecommerce_ext.shopify_override.upload_erpnext_item"
-}
+# override_whitelisted_methods = {
+# 	"ecommerce_integrations.ecommerce_integrations.shopify.product.upload_erpnext_item":
+#         "ecommerce_ext.shopify_override.upload_erpnext_item"
+# }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
