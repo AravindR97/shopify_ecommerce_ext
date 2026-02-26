@@ -137,10 +137,16 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
+# doc_events = {
+#     "Item": {
+#         "after_insert": "ecommerce_ext.shopify_override.upload_erpnext_item",
+#         "on_update": "ecommerce_ext.shopify_override.upload_erpnext_item"
+#     }
+# }
+
 doc_events = {
     "Item": {
-        "after_insert": "ecommerce_ext.shopify_override.upload_erpnext_item",
-        "on_update": "ecommerce_ext.shopify_override.upload_erpnext_item"
+        "on_update": "ecommerce_ext.shopify_barcode.sync_barcode_to_shopify"
     }
 }
 
