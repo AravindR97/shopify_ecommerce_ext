@@ -173,9 +173,10 @@ app_license = "mit"
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "ecommerce_ext.event.get_events"
-# }
+override_whitelisted_methods = {
+	"ecommerce_integrations.ecommerce_integrations.shopify.product.upload_erpnext_item":
+        "ecommerce_ext.shopify_override.upload_erpnext_item"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
