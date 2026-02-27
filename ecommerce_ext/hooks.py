@@ -148,7 +148,7 @@ doc_events = {
     "Item": {
         "on_update": [
             "ecommerce_ext.shopify_barcode.sync_barcode_to_shopify",
-            "ecommerce_ext.shopify_variant_fix.fix_variant_popup_and_image"
+            "ecommerce_ext.shopify_variant_image.set_shopify_variant_image"
         ]
     }
 }
