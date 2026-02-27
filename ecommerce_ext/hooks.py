@@ -146,7 +146,10 @@ app_license = "mit"
 
 doc_events = {
     "Item": {
-        "on_update": "ecommerce_ext.shopify_barcode.sync_barcode_to_shopify"
+        "on_update": [
+            "ecommerce_ext.shopify_barcode.sync_barcode_to_shopify",
+            "ecommerce_ext.shopify_variant_fix.fix_variant_popup_and_image"
+        ]
     }
 }
 

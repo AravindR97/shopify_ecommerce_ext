@@ -7,10 +7,6 @@ from ecommerce_integrations.shopify.constants import MODULE_NAME
 
 @temp_shopify_session
 def sync_barcode_to_shopify(doc, method=None):
-    """
-    Sync ERPNext custom_barcode field to Shopify Variant barcode
-    Sync ERPNext image field to Shopify Product Media (Images)
-    """
 
     if doc.flags.from_integration:
         return
@@ -35,6 +31,18 @@ def sync_barcode_to_shopify(doc, method=None):
     if not product or not product.variants:
         return
 
+    # =====================================================
+    # ✅ DESCRIPTION FIX (SAFE ADDITION)
+    # =====================================================
+    if doc.variant_of:
+        template = frappe.get_doc("Item", doc.variant_of)
+
+        if template.description and product.body_html != template.description:
+            product.body_html = template.description
+            product.save()
+    # =====================================================
+
+
     # ------------------------
     # BARCODE SYNC
     # ------------------------
@@ -51,16 +59,13 @@ def sync_barcode_to_shopify(doc, method=None):
     if not doc.image:
         return
 
-    # Convert relative file path to full URL
     image_url = frappe.utils.get_url(doc.image)
 
-    # Check if image already exists in Shopify
     existing_images = product.images or []
     already_exists = any(img.src == image_url for img in existing_images)
 
     if already_exists:
         return
 
-    # Add new image to Shopify product
     product.images = [{"src": image_url}]
     product.save()
