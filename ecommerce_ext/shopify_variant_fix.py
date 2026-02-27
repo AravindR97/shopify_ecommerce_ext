@@ -6,21 +6,21 @@ from ecommerce_integrations.shopify.constants import MODULE_NAME
 
 
 @temp_shopify_session
-def fix_variant_popup_and_image(doc, method=None):
+def prevent_duplicate_variant_and_fix_image(doc, method=None):
     """
-    1) Prevent 'Variant already exists' popup
-    2) Attach image to correct Shopify variant
-    3) Do NOT overwrite product image
+    1. Prevent duplicate variant creation popup
+    2. Attach image to correct Shopify variant
+    3. Do NOT overwrite product image
     """
 
     if doc.flags.from_integration:
         return
 
-    # Only run for variant items
+    # Only variants
     if not doc.variant_of:
         return
 
-    # Get Shopify Product ID (mapped to template)
+    # Get Shopify Product ID from template mapping
     product_id = frappe.db.get_value(
         "Ecommerce Item",
         {
@@ -38,9 +38,9 @@ def fix_variant_popup_and_image(doc, method=None):
     if not product:
         return
 
-    # ---------------------------------------
-    # STEP 1: STOP VARIANT DUPLICATE POPUP
-    # ---------------------------------------
+    # -----------------------------------------
+    # STOP DUPLICATE VARIANT CREATION
+    # -----------------------------------------
     existing_variant = None
 
     for variant in product.variants:
@@ -48,26 +48,26 @@ def fix_variant_popup_and_image(doc, method=None):
             existing_variant = variant
             break
 
-    if not existing_variant:
-        # Let core create it normally
+    if existing_variant:
+        # 🔥 CRITICAL LINE
+        # Tell core integration to skip upload
+        doc.flags.from_integration = True
+
+    else:
+        # Variant not yet created → let core handle it
         return
 
-    # If exists → update safely instead of letting core fail
-    price = doc.standard_rate or 0
-
-    if str(existing_variant.price) != str(price):
-        existing_variant.price = price
-        existing_variant.save()
-
-    # ---------------------------------------
-    # STEP 2: ATTACH VARIANT IMAGE PROPERLY
-    # ---------------------------------------
+    # -----------------------------------------
+    # FIX VARIANT IMAGE (Attach Properly)
+    # -----------------------------------------
     if not doc.image:
         return
 
     image_url = frappe.utils.get_url(doc.image)
 
-    settings = frappe.get_doc("Shopify Settings")
+    # Correct DocType name (singular!)
+    settings = frappe.get_doc("Shopify Setting")
+
     shop_url = settings.shopify_url
     token = settings.get_password("access_token")
 
@@ -76,10 +76,10 @@ def fix_variant_popup_and_image(doc, method=None):
         "Content-Type": "application/json"
     }
 
-    # Check if image already attached to this variant
+    # Avoid duplicate variant image
     for img in product.images or []:
         if img.src == image_url and existing_variant.id in (img.variant_ids or []):
-            return  # already correct
+            return
 
     image_payload = {
         "image": {
